@@ -375,7 +375,7 @@
                     </div>
                     
                     <div class="mb-6">
-                        <input type="range" id="progressBar" class="progress-bar w-full" value="0" min="0" max="100">
+                        <input type="range" id="progressBar" class="progress-bar w-full" value="0" min="0", max="100">
                         <div class="flex justify-between text-sm text-gray-500 mt-1">
                             <span id="currentTime">0:00</span>
                             <span id="totalTime">0:00</span>
@@ -398,7 +398,7 @@
                     
                     <div class="flex items-center justify-center gap-3">
                         <i class="fas fa-volume-down text-gray-500"></i>
-                        <input type="range" id="volumeControl" class="volume-slider w-32" value="80" min="0" max="100">
+                        <input type="range" id="volumeControl" class="volume-slider w-32" value="80" min="0", max="100">
                         <i class="fas fa-volume-up text-gray-500"></i>
                     </div>
                 </div>
@@ -407,11 +407,46 @@
     </div>
 
     <script>
+        // Initialize data from localStorage or create default data
+        function initializeData() {
+            // Get users from localStorage or create default users
+            let storedUsers = localStorage.getItem('pocafyUsers');
+            if (storedUsers) {
+                users = JSON.parse(storedUsers);
+            } else {
+                users = [
+                    { email: "user@example.com", password: "password123", name: "John Doe" },
+                    { email: "aaron@example.com", password: "Aaron0816", name: "Aaron" }
+                ];
+                localStorage.setItem('pocafyUsers', JSON.stringify(users));
+            }
+            
+            // Get podcasts from localStorage or create empty array
+            let storedPodcasts = localStorage.getItem('pocafyPodcasts');
+            if (storedPodcasts) {
+                podcasts = JSON.parse(storedPodcasts);
+            } else {
+                podcasts = [];
+                localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
+            }
+            
+            // Check if user is already logged in
+            checkRememberedLogin();
+        }
+        
+        // Check if user is remembered from previous session
+        function checkRememberedLogin() {
+            const rememberedEmail = localStorage.getItem('rememberedEmail');
+            if (rememberedEmail) {
+                document.getElementById('loginEmail').value = rememberedEmail;
+                document.getElementById('visitorOptionsScreen').classList.add('hidden');
+                document.getElementById('visitorLoginScreen').classList.remove('hidden');
+                document.getElementById('visitorLoginScreen').classList.add('fade-in');
+            }
+        }
+        
         // Store registered users
-        let users = [
-            { email: "user@example.com", password: "password123", name: "John Doe" },
-            { email: "aaron@example.com", password: "Aaron0816", name: "Aaron" }
-        ];
+        let users = [];
         
         // Store uploaded podcasts
         let podcasts = [];
@@ -421,6 +456,9 @@
         let currentPodcast = null;
         let isPlaying = false;
         let progressInterval;
+        
+        // Initialize data when page loads
+        document.addEventListener('DOMContentLoaded', initializeData);
         
         // Toggle password visibility
         function togglePassword(id) {
@@ -492,6 +530,9 @@
             
             // Close player if open
             closePlayer();
+            
+            // Clear remembered login
+            localStorage.removeItem('rememberedEmail');
         }
         
         // Form submissions
@@ -517,6 +558,9 @@
             const user = users.find(u => u.email === email && u.password === password);
             
             if (user) {
+                // Remember the user's email for next time
+                localStorage.setItem('rememberedEmail', email);
+                
                 document.getElementById('visitorLoginScreen').classList.add('hidden');
                 showPodcastScreen();
             } else {
@@ -549,6 +593,10 @@
             
             // Add new user
             users.push({ email, password, name });
+            localStorage.setItem('pocafyUsers', JSON.stringify(users));
+            
+            // Remember the user's email for next time
+            localStorage.setItem('rememberedEmail', email);
             
             document.getElementById('visitorRegisterScreen').classList.add('hidden');
             document.getElementById('registerSuccessScreen').classList.remove('hidden');
@@ -611,7 +659,7 @@
         document.getElementById('podcastSearch').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             const filteredPodcasts = podcasts.filter(podcast => 
-                podcast.name.toLowerCase().includes(searchTerm) || 
+                podcast.name.toLowerCase().includes(searchTerm) ||
                 podcast.description.toLowerCase().includes(searchTerm)
             );
             renderPodcastList(filteredPodcasts);
@@ -698,9 +746,24 @@
                         const totalSeconds = Math.floor(audio.duration % 60);
                         document.getElementById('totalTime').textContent = 
                             `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+                        
+                        // Update podcast duration in storage
+                        if (currentPodcast) {
+                            currentPodcast.duration = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
+                            updatePodcastInStorage(currentPodcast);
+                        }
                     }
                 }
             }, 1000);
+        }
+        
+        // Update podcast in localStorage
+        function updatePodcastInStorage(updatedPodcast) {
+            const index = podcasts.findIndex(p => p.id === updatedPodcast.id);
+            if (index !== -1) {
+                podcasts[index] = updatedPodcast;
+                localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
+            }
         }
         
         // Progress bar click to seek
@@ -728,15 +791,18 @@
             
             // Create new podcast object
             const newPodcast = {
-                id: podcasts.length + 1,
+                id: Date.now(), // Use timestamp as unique ID
                 name: name,
                 description: description || "No description provided",
                 duration: "00:00", // Will be updated when played
-                url: url
+                url: url,
+                fileName: file.name,
+                uploadDate: new Date().toISOString()
             };
             
             // Add to podcasts array
             podcasts.push(newPodcast);
+            localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
             
             // Show success message
             alert(`Podcast "${name}" uploaded successfully!`);
