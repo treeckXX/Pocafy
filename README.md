@@ -1,942 +1,703 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
-    authDomain: "pocafy-1bfc5.firebaseapp.com",
-    projectId: "pocafy-1bfc5",
-    storageBucket: "pocafy-1bfc5.firebasestorage.app",
-    messagingSenderId: "967728384050",
-    appId: "1:967728384050:web:dbab7568275ddba194942b"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pocafy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pocafy - Podcast Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#6366F1',
+            secondary: '#10B981',
+            accent: '#F59E0B',
+            dark: '#1F2937',
+            darker: '#111827',
+            light: '#F3F4F6'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .bg-gradient-custom {
-            background: linear-gradient(135deg, #6b21a8 0%, #3b82f6 100%);
-        }
-        .podcast-player {
-            transition: all 0.3s ease;
-        }
-        .podcast-player.playing {
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.25);
-        }
-        .progress-bar {
-            appearance: none;
-            height: 6px;
-            border-radius: 3px;
-            background: #e5e7eb;
-            outline: none;
-        }
-        .progress-bar::-webkit-slider-thumb {
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-        }
-        .volume-slider {
-            appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: #e5e7eb;
-            outline: none;
-        }
-        .volume-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-        }
-        .podcast-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        .player-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-        .player-btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: #e0e7ff;
-            color: #3b82f6;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .player-btn:hover {
-            background: #3b82f6;
-            color: white;
-        }
-        .player-btn.main {
-            width: 50px;
-            height: 50px;
-            background: #3b82f6;
-            color: white;
-        }
-        .player-btn.main:hover {
-            background: #2563eb;
-            transform: scale(1.05);
-        }
-        .podcast-image {
-            width: 100%;
-            height: 200px;
-            background: linear-gradient(45deg, #6b21a8, #3b82f6);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .podcast-image i {
-            font-size: 4rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-    </style>
+      }
+    }
+    
+    // Global functions for UI navigation
+    function showAdminLogin() {
+      hideAll();
+      document.getElementById('adminLogin').classList.remove('hidden');
+    }
+    
+    function showListenerLogin() {
+      hideAll();
+      document.getElementById('listenerLogin').classList.remove('hidden');
+    }
+    
+    function backToRoleSelection() {
+      hideAll();
+      document.getElementById('roleSelection').classList.remove('hidden');
+    }
+    
+    function hideAll() {
+      document.getElementById('roleSelection').classList.add('hidden');
+      document.getElementById('adminLogin').classList.add('hidden');
+      document.getElementById('listenerLogin').classList.add('hidden');
+      document.getElementById('adminArea').classList.add('hidden');
+      document.getElementById('listenerArea').classList.add('hidden');
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(90deg, #6366F1, #10B981);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #111827, #1F2937);
+    }
+    
+    .card {
+      background: rgba(31, 41, 55, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .podcast-card {
+      transition: all 0.3s ease;
+      background: rgba(31, 41, 55, 0.5);
+    }
+    
+    .podcast-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+      background: rgba(31, 41, 55, 0.7);
+    }
+    
+    .audio-player {
+      filter: invert(1);
+      width: 100%;
+    }
+    
+    .waveform {
+      height: 50px;
+      background: linear-gradient(90deg, #6366F1, #10B981);
+      opacity: 0.7;
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .waveform::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255,255,255,0.3) 50%, 
+        transparent 100%);
+      animation: wave 2s linear infinite;
+    }
+    
+    @keyframes wave {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    
+    .file-upload {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .file-upload:hover {
+      border-color: #6366F1;
+      background: rgba(99, 102, 241, 0.1);
+    }
+    
+    .file-upload.dragover {
+      border-color: #10B981;
+      background: rgba(16, 185, 129, 0.1);
+    }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #1F2937;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #4B5563;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6B7280;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-
-  // Firebase Konfiguration
-  const firebaseConfig = {
-    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
-    authDomain: "pocafy-1bfc5.firebaseapp.com",
-    projectId: "pocafy-1bfc5",
-    storageBucket: "pocafy-1bfc5.appspot.com",
-    messagingSenderId: "967728384050",
-    appId: "1:967728384050:web:dbab7568275ddba194942b"
-  };
-
-  // Firebase App initialisieren
-  const app = initializeApp(firebaseConfig);
-
-  // Auth-Instanz holen
-  const auth = getAuth(app);
-
-  // Funktion für Registrierung (kannst du später aufrufen)
-  async function register(email, password) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Registrierung erfolgreich:", userCredential.user.email);
-      alert("Registrierung erfolgreich!");
-    } catch (error) {
-      console.error("Registrierungsfehler:", error);
-      alert("Fehler bei Registrierung: " + error.message);
-    }
-  }
-
-  // Funktion für Login (kannst du später aufrufen)
-  async function login(email, password) {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login erfolgreich:", userCredential.user.email);
-      alert("Login erfolgreich!");
-    } catch (error) {
-      console.error("Login-Fehler:", error);
-      alert("Fehler beim Login: " + error.message);
-    }
-  }
-
-  // Globale Funktionen, damit du sie von HTML aus ansprechen kannst
-  window.register = register;
-  window.login = login;
-</script>
-      <form onsubmit="event.preventDefault(); register(document.getElementById('regEmail').value, document.getElementById('regPassword').value);">
-    <input type="email" id="regEmail" required placeholder="Email" />
-    <input type="password" id="regPassword" required placeholder="Passwort" />
-    <button type="submit">Registrieren</button>
-  </form>
-
-  <form onsubmit="event.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);">
-    <input type="email" id="loginEmail" required placeholder="Email" />
-    <input type="password" id="loginPassword" required placeholder="Passwort" />
-    <button type="submit">Login</button>
-  </form>
-    <div class="container mx-auto max-w-md">
-        <!-- Initial Choice Screen -->
-        <div id="choiceScreen" class="bg-white rounded-xl shadow-2xl overflow-hidden fade-in">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Welcome to Pocafy</h1>
-                <p class="mt-2 opacity-90">Are you an admin or listener?</p>
-            </div>
-            
-            <div class="p-8">
-                <div class="grid grid-cols-1 gap-6">
-                    <button onclick="showAdminLogin()" class="flex items-center justify-center gap-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105">
-                        <i class="fas fa-user-shield text-xl"></i>
-                        <span>I'm an Admin</span>
-                    </button>
-                    
-                    <button onclick="showVisitorOptions()" class="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all transform hover:scale-105">
-                        <i class="fas fa-headphones text-xl"></i>
-                        <span>I'm a Listener</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+<body class="gradient-bg text-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8 flex flex-col items-center">
+    <!-- Welcome Section -->
+    <div id="roleSelection" class="w-full max-w-md text-center">
+      <div class="mb-8">
+        <h1 class="text-5xl font-bold mb-2 gradient-text">Pocafy</h1>
+        <p class="text-gray-400">Your premium podcast experience</p>
+      </div>
+      
+      <div class="card rounded-2xl p-8 shadow-xl">
+        <div class="waveform mb-6"></div>
+        <h2 class="text-2xl font-semibold mb-4">Welcome to Pocafy</h2>
+        <p class="text-gray-300 mb-6">
+          Discover amazing podcasts or share your own content with the world. 
+          Choose your role to continue.
+        </p>
         
-        <!-- Admin Login Screen -->
-        <div id="adminLoginScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Admin Login</h1>
-                <p class="mt-2 opacity-90">Enter your password to continue</p>
-            </div>
-            
-            <div class="p-8">
-                <form id="adminForm" class="space-y-6">
-                    <div>
-                        <label for="adminPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <div class="relative">
-                            <input type="password" id="adminPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" placeholder="Enter password" required>
-                            <button type="button" onclick="togglePassword('adminPassword')" class="absolute right-3 top-3 text-gray-500 hover:text-gray-700">
-                                <i class="far fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <button type="button" onclick="backToChoice()" class="text-purple-600 hover:text-purple-800 font-medium flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i> Back
-                        </button>
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                            Login
-                        </button>
-                    </div>
-                </form>
-            </div>
+        <div class="flex flex-col space-y-4">
+          <button onclick="showAdminLogin()" class="bg-primary hover:bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition transform hover:scale-105">
+            <i class="fas fa-user-shield"></i>
+            <span>For Admin</span>
+          </button>
+          <button onclick="showListenerLogin()" class="bg-secondary hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg flex items-center justify-center space-x-2 transition transform hover:scale-105">
+            <i class="fas fa-headphones"></i>
+            <span>For Listener</span>
+          </button>
         </div>
-        
-        <!-- Visitor Options Screen -->
-        <div id="visitorOptionsScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Welcome Listener</h1>
-                <p class="mt-2 opacity-90">Login or register to continue</p>
-            </div>
-            
-            <div class="p-8">
-                <div class="grid grid-cols-1 gap-6">
-                    <button onclick="showVisitorLogin()" class="flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg transition-all">
-                        <i class="fas fa-sign-in-alt text-xl"></i>
-                        <span>Login</span>
-                    </button>
-                    
-                    <button onclick="showVisitorRegister()" class="flex items-center justify-center gap-3 bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-lg transition-all">
-                        <i class="fas fa-user-plus text-xl"></i>
-                        <span>Register</span>
-                    </button>
-                    
-                    <button onclick="backToChoice()" class="flex items-center justify-center gap-3 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-4 px-6 rounded-lg transition-all">
-                        <i class="fas fa-arrow-left text-xl"></i>
-                        <span>Back</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Visitor Login Screen -->
-        <div id="visitorLoginScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Listener Login</h1>
-                <p class="mt-2 opacity-90">Enter your credentials</p>
-            </div>
-            
-            <div class="p-8">
-                <form id="visitorLoginForm" class="space-y-6">
-                    <div>
-                        <label for="loginEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="loginEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="your@email.com" required>
-                    </div>
-                    
-                    <div>
-                        <label for="loginPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <div class="relative">
-                            <input type="password" id="loginPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent" placeholder="Enter password" required>
-                            <button type="button" onclick="togglePassword('loginPassword')" class="absolute right-3 top-3 text-gray-500 hover:text-gray-700">
-                                <i class="far fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <button type="button" onclick="backToVisitorOptions()" class="text-blue-600 hover:text-blue-800 font-medium flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i> Back
-                        </button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                            Login
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Visitor Register Screen -->
-        <div id="visitorRegisterScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Listener Registration</h1>
-                <p class="mt-2 opacity-90">Create your account</p>
-            </div>
-            
-            <div class="p-8">
-                <form id="visitorRegisterForm" class="space-y-6">
-                    <div>
-                        <label for="registerName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                        <input type="text" id="registerName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" placeholder="John Doe" required>
-                    </div>
-                    
-                    <div>
-                        <label for="registerEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" id="registerEmail" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" placeholder="your@email.com" required>
-                    </div>
-                    
-                    <div>
-                        <label for="registerPassword" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                        <div class="relative">
-                            <input type="password" id="registerPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" placeholder="Create password" required>
-                            <button type="button" onclick="togglePassword('registerPassword')" class="absolute right-3 top-3 text-gray-500 hover:text-gray-700">
-                                <i class="far fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label for="registerConfirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                        <div class="relative">
-                            <input type="password" id="registerConfirmPassword" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent" placeholder="Confirm password" required>
-                            <button type="button" onclick="togglePassword('registerConfirmPassword')" class="absolute right-3 top-3 text-gray-500 hover:text-gray-700">
-                                <i class="far fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <button type="button" onclick="backToVisitorOptions()" class="text-green-600 hover:text-green-800 font-medium flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i> Back
-                        </button>
-                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                            Register
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Admin Upload Screen -->
-        <div id="adminUploadScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white text-center">
-                <h1 class="text-3xl font-bold">Upload Podcast</h1>
-                <p class="mt-2 opacity-90">Share your content with listeners</p>
-            </div>
-            
-            <div class="p-8">
-                <form id="uploadForm" class="space-y-6">
-                    <div>
-                        <label for="podcastName" class="block text-sm font-medium text-gray-700 mb-1">Podcast Name</label>
-                        <input type="text" id="podcastName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" placeholder="My Awesome Podcast" required>
-                    </div>
-                    
-                    <div>
-                        <label for="podcastFile" class="block text-sm font-medium text-gray-700 mb-1">Podcast File</label>
-                        <input type="file" id="podcastFile" accept="audio/*" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" required>
-                    </div>
-                    
-                    <div>
-                        <label for="podcastDescription" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea id="podcastDescription" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-transparent" placeholder="What's this podcast about?"></textarea>
-                    </div>
-                    
-                    <div class="flex items-center justify-between">
-                        <button type="button" onclick="resetToInitial()" class="text-purple-600 hover:text-purple-800 font-medium flex items-center">
-                            <i class="fas fa-arrow-left mr-2"></i> Back to Home
-                        </button>
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                            Upload Podcast
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Visitor Podcast Screen -->
-        <div id="visitorPodcastScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden">
-            <div class="bg-gradient-custom p-6 text-white">
-                <h1 class="text-3xl font-bold">Pocafy Hub</h1>
-                <div class="mt-4 relative">
-                    <input type="text" id="podcastSearch" class="w-full px-4 py-3 rounded-lg bg-white bg-opacity-20 placeholder-white focus:outline-none focus:ring-2 focus:ring-white" placeholder="Search podcasts...">
-                    <i class="fas fa-search absolute right-3 top-3 text-white"></i>
-                </div>
-            </div>
-            
-            <div class="p-6">
-                <div id="podcastList" class="space-y-4">
-                    <!-- Podcasts will be dynamically added here -->
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-podcast text-4xl mb-2"></i>
-                        <p>No podcasts available yet</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-6 border-t border-gray-200">
-                <button onclick="resetToInitial()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                </button>
-            </div>
-        </div>
-        
-        <!-- Register Success Screen -->
-        <div id="registerSuccessScreen" class="hidden bg-white rounded-xl shadow-2xl overflow-hidden text-center">
-            <div class="bg-gradient-custom p-6 text-white">
-                <h1 class="text-3xl font-bold">Registration Complete!</h1>
-            </div>
-            <div class="p-8">
-                <div class="text-green-500 text-6xl mb-6">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <h2 class="text-2xl font-semibold text-gray-800">Account Created</h2>
-                <p class="mt-2 text-gray-600">You can now login to access podcasts.</p>
-                <button onclick="resetToInitial()" class="mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
-                    Back to Home
-                </button>
-            </div>
-        </div>
-        
-        <!-- Podcast Player Modal -->
-        <div id="podcastPlayerModal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div class="bg-white rounded-xl w-full max-w-md">
-                <div class="bg-gradient-custom p-6 text-white rounded-t-xl">
-                    <div class="flex justify-between items-center">
-                        <h2 id="playerPodcastName" class="text-2xl font-bold">Podcast Title</h2>
-                        <button onclick="closePlayer()" class="text-white text-2xl">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="p-6">
-                    <div class="podcast-image">
-                        <i class="fas fa-podcast"></i>
-                    </div>
-                    
-                    <div class="mb-2">
-                        <p id="playerPodcastDescription" class="text-gray-600 text-center">Podcast description will appear here</p>
-                    </div>
-                    
-                    <div class="mb-6">
-                        <input type="range" id="progressBar" class="progress-bar w-full" value="0" min="0", max="100">
-                        <div class="flex justify-between text-sm text-gray-500 mt-1">
-                            <span id="currentTime">0:00</span>
-                            <span id="totalTime">0:00</span>
-                        </div>
-                    </div>
-                    
-                    <div class="player-controls mb-6">
-                        <button id="rewindBtn" class="player-btn">
-                            <i class="fas fa-backward"></i>
-                        </button>
-                        
-                        <button id="playPauseBtn" class="player-btn main">
-                            <i class="fas fa-play"></i>
-                        </button>
-                        
-                        <button id="forwardBtn" class="player-btn">
-                            <i class="fas fa-forward"></i>
-                        </button>
-                    </div>
-                    
-                    <div class="flex items-center justify-center gap-3">
-                        <i class="fas fa-volume-down text-gray-500"></i>
-                        <input type="range" id="volumeControl" class="volume-slider w-32" value="80" min="0", max="100">
-                        <i class="fas fa-volume-up text-gray-500"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script>
-        // Initialize data from localStorage or create default data
-        function initializeData() {
-            // Get users from localStorage or create default users
-            let storedUsers = localStorage.getItem('pocafyUsers');
-            if (storedUsers) {
-                users = JSON.parse(storedUsers);
-            } else {
-                users = [
-                    { email: "user@example.com", password: "password123", name: "John Doe" },
-                    { email: "aaron@example.com", password: "Aaron0816", name: "Aaron" }
-                ];
-                localStorage.setItem('pocafyUsers', JSON.stringify(users));
-            }
-            
-            // Get podcasts from localStorage or create empty array
-            let storedPodcasts = localStorage.getItem('pocafyPodcasts');
-            if (storedPodcasts) {
-                podcasts = JSON.parse(storedPodcasts);
-            } else {
-                podcasts = [];
-                localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
-            }
-            
-            // Check if user is already logged in
-            checkRememberedLogin();
-        }
+    <!-- Admin Password Login -->
+    <div id="adminLogin" class="hidden w-full max-w-md">
+      <div class="card rounded-2xl p-8 shadow-xl">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">Admin Login</h2>
+          <button onclick="backToRoleSelection()" class="text-gray-400 hover:text-white transition">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
         
-        // Check if user is remembered from previous session
-        function checkRememberedLogin() {
-            const rememberedEmail = localStorage.getItem('rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('loginEmail').value = rememberedEmail;
-                document.getElementById('visitorOptionsScreen').classList.add('hidden');
-                document.getElementById('visitorLoginScreen').classList.remove('hidden');
-                document.getElementById('visitorLoginScreen').classList.add('fade-in');
-            }
-        }
-        
-        // Store registered users
-        let users = [];
-        
-        // Store uploaded podcasts
-        let podcasts = [];
-        
-        // Audio player variables
-        let audio = new Audio();
-        let currentPodcast = null;
-        let isPlaying = false;
-        let progressInterval;
-        
-        // Initialize data when page loads
-        document.addEventListener('DOMContentLoaded', initializeData);
-        
-        // Toggle password visibility
-        function togglePassword(id) {
-            const input = document.getElementById(id);
-            const icon = input.nextElementSibling.querySelector('i');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-        
-        // Navigation functions
-        function showAdminLogin() {
-            document.getElementById('choiceScreen').classList.add('hidden');
-            document.getElementById('adminLoginScreen').classList.remove('hidden');
-            document.getElementById('adminLoginScreen').classList.add('fade-in');
-        }
-        
-        function showVisitorOptions() {
-            document.getElementById('choiceScreen').classList.add('hidden');
-            document.getElementById('visitorOptionsScreen').classList.remove('hidden');
-            document.getElementById('visitorOptionsScreen').classList.add('fade-in');
-        }
-        
-        function showVisitorLogin() {
-            document.getElementById('visitorOptionsScreen').classList.add('hidden');
-            document.getElementById('visitorLoginScreen').classList.remove('hidden');
-            document.getElementById('visitorLoginScreen').classList.add('fade-in');
-        }
-        
-        function showVisitorRegister() {
-            document.getElementById('visitorOptionsScreen').classList.add('hidden');
-            document.getElementById('visitorRegisterScreen').classList.remove('hidden');
-            document.getElementById('visitorRegisterScreen').classList.add('fade-in');
-        }
-        
-        function backToChoice() {
-            document.getElementById('adminLoginScreen').classList.add('hidden');
-            document.getElementById('visitorOptionsScreen').classList.add('hidden');
-            document.getElementById('visitorLoginScreen').classList.add('hidden');
-            document.getElementById('visitorRegisterScreen').classList.add('hidden');
-            document.getElementById('choiceScreen').classList.remove('hidden');
-            document.getElementById('choiceScreen').classList.add('fade-in');
-        }
-        
-        function backToVisitorOptions() {
-            document.getElementById('visitorLoginScreen').classList.add('hidden');
-            document.getElementById('visitorRegisterScreen').classList.add('hidden');
-            document.getElementById('visitorOptionsScreen').classList.remove('hidden');
-            document.getElementById('visitorOptionsScreen').classList.add('fade-in');
-        }
-        
-        function resetToInitial() {
-            document.getElementById('adminUploadScreen').classList.add('hidden');
-            document.getElementById('visitorPodcastScreen').classList.add('hidden');
-            document.getElementById('registerSuccessScreen').classList.add('hidden');
-            document.getElementById('choiceScreen').classList.remove('hidden');
-            document.getElementById('choiceScreen').classList.add('fade-in');
-            
-            // Reset forms
-            document.getElementById('adminForm').reset();
-            document.getElementById('visitorLoginForm').reset();
-            document.getElementById('visitorRegisterForm').reset();
-            
-            // Close player if open
-            closePlayer();
-            
-            // Clear remembered login
-            localStorage.removeItem('rememberedEmail');
-        }
-        
-        // Form submissions
-        document.getElementById('adminForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const password = document.getElementById('adminPassword').value;
-            
-            if (password === 'Aaron0816') {
-                document.getElementById('adminLoginScreen').classList.add('hidden');
-                document.getElementById('adminUploadScreen').classList.remove('hidden');
-                document.getElementById('adminUploadScreen').classList.add('fade-in');
-            } else {
-                alert('Incorrect password. Please try again.');
-            }
-        });
-        
-        document.getElementById('visitorLoginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            // Check if user exists
-            const user = users.find(u => u.email === email && u.password === password);
-            
-            if (user) {
-                // Remember the user's email for next time
-                localStorage.setItem('rememberedEmail', email);
-                
-                document.getElementById('visitorLoginScreen').classList.add('hidden');
-                showPodcastScreen();
-            } else {
-                alert('Invalid email or password. Please try again or register a new account.');
-            }
-        });
-        
-        document.getElementById('visitorRegisterForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('registerConfirmPassword').value;
-            
-            if (!name || !email || !password || !confirmPassword) {
-                alert('Please fill in all fields.');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('Passwords do not match.');
-                return;
-            }
-            
-            // Check if email already exists
-            if (users.some(u => u.email === email)) {
-                alert('An account with this email already exists. Please login instead.');
-                return;
-            }
-            
-            // Add new user
-            users.push({ email, password, name });
-            localStorage.setItem('pocafyUsers', JSON.stringify(users));
-            
-            // Remember the user's email for next time
-            localStorage.setItem('rememberedEmail', email);
-            
-            document.getElementById('visitorRegisterScreen').classList.add('hidden');
-            document.getElementById('registerSuccessScreen').classList.remove('hidden');
-            document.getElementById('registerSuccessScreen').classList.add('fade-in');
-        });
-        
-        // Show podcast screen with sample data
-        function showPodcastScreen() {
-            document.getElementById('visitorPodcastScreen').classList.remove('hidden');
-            document.getElementById('visitorPodcastScreen').classList.add('fade-in');
-            renderPodcastList(podcasts);
-        }
-        
-        // Render podcast list
-        function renderPodcastList(podcastArray) {
-            const podcastList = document.getElementById('podcastList');
-            
-            if (podcastArray.length === 0) {
-                podcastList.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-podcast text-4xl mb-2"></i>
-                        <p>No podcasts available yet</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            podcastList.innerHTML = '';
-            
-            podcastArray.forEach(podcast => {
-                const podcastElement = document.createElement('div');
-                podcastElement.className = 'podcast-item bg-gray-50 rounded-lg p-4 border border-gray-200 cursor-pointer transition-all';
-                podcastElement.innerHTML = `
-                    <div class="flex items-center">
-                        <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mr-4">
-                            <i class="fas fa-podcast text-2xl text-gray-500"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-800">${podcast.name}</h3>
-                            <p class="text-sm text-gray-600 mt-1">${podcast.description}</p>
-                            <div class="flex items-center mt-2 text-sm text-gray-500">
-                                <i class="far fa-clock mr-1"></i>
-                                <span>${podcast.duration}</span>
-                            </div>
-                        </div>
-                        <div>
-                            <button class="text-purple-600 hover:text-purple-800">
-                                <i class="fas fa-play-circle text-2xl"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                podcastElement.addEventListener('click', () => openPlayer(podcast));
-                podcastList.appendChild(podcastElement);
-            });
-        }
-        
-        // Search functionality
-        document.getElementById('podcastSearch').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const filteredPodcasts = podcasts.filter(podcast => 
-                podcast.name.toLowerCase().includes(searchTerm) ||
-                podcast.description.toLowerCase().includes(searchTerm)
-            );
-            renderPodcastList(filteredPodcasts);
-        });
-        
-        // Podcast player functions
-        function openPlayer(podcast) {
-            currentPodcast = podcast;
-            document.getElementById('playerPodcastName').textContent = podcast.name;
-            document.getElementById('playerPodcastDescription').textContent = podcast.description;
-            document.getElementById('podcastPlayerModal').classList.remove('hidden');
-            
-            // Reset player UI
-            document.getElementById('playPauseBtn').innerHTML = '<i class="fas fa-play"></i>';
-            document.getElementById('progressBar').value = 0;
-            document.getElementById('currentTime').textContent = '0:00';
-            document.getElementById('totalTime').textContent = podcast.duration;
-            
-            // Set up audio
-            audio.src = podcast.url;
-            audio.volume = document.getElementById('volumeControl').value / 100;
-            
-            isPlaying = false;
-        }
-        
-        function closePlayer() {
-            document.getElementById('podcastPlayerModal').classList.add('hidden');
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                clearInterval(progressInterval);
-            }
-        }
-        
-        // Player controls
-        document.getElementById('playPauseBtn').addEventListener('click', function() {
-            const icon = this.querySelector('i');
-            
-            if (isPlaying) {
-                icon.classList.remove('fa-pause');
-                icon.classList.add('fa-play');
-                audio.pause();
-                clearInterval(progressInterval);
-            } else {
-                icon.classList.remove('fa-play');
-                icon.classList.add('fa-pause');
-                audio.play();
-                startProgressTracking();
-            }
-            
-            isPlaying = !isPlaying;
-        });
-        
-        document.getElementById('rewindBtn').addEventListener('click', function() {
-            audio.currentTime = Math.max(0, audio.currentTime - 15);
-        });
-        
-        document.getElementById('forwardBtn').addEventListener('click', function() {
-            audio.currentTime = Math.min(audio.duration, audio.currentTime + 15);
-        });
-        
-        // Volume control
-        document.getElementById('volumeControl').addEventListener('input', function() {
-            audio.volume = this.value / 100;
-        });
-        
-        // Progress tracking
-        function startProgressTracking() {
-            clearInterval(progressInterval);
-            progressInterval = setInterval(() => {
-                if (audio.duration) {
-                    const progress = (audio.currentTime / audio.duration) * 100;
-                    document.getElementById('progressBar').value = progress;
-                    
-                    // Update time display
-                    const currentMinutes = Math.floor(audio.currentTime / 60);
-                    const currentSeconds = Math.floor(audio.currentTime % 60);
-                    document.getElementById('currentTime').textContent = 
-                        `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds}`;
-                    
-                    // Update total time if not set
-                    if (document.getElementById('totalTime').textContent === '0:00') {
-                        const totalMinutes = Math.floor(audio.duration / 60);
-                        const totalSeconds = Math.floor(audio.duration % 60);
-                        document.getElementById('totalTime').textContent = 
-                            `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
-                        
-                        // Update podcast duration in storage
-                        if (currentPodcast) {
-                            currentPodcast.duration = `${totalMinutes}:${totalSeconds < 10 ? '0' : ''}${totalSeconds}`;
-                            updatePodcastInStorage(currentPodcast);
-                        }
-                    }
-                }
-            }, 1000);
-        }
-        
-        // Update podcast in localStorage
-        function updatePodcastInStorage(updatedPodcast) {
-            const index = podcasts.findIndex(p => p.id === updatedPodcast.id);
-            if (index !== -1) {
-                podcasts[index] = updatedPodcast;
-                localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
-            }
-        }
-        
-        // Progress bar click to seek
-        document.getElementById('progressBar').addEventListener('input', function() {
-            if (audio.duration) {
-                const newTime = (this.value / 100) * audio.duration;
-                audio.currentTime = newTime;
-            }
-        });
-        
-        // Upload form submission
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('podcastName').value;
-            const file = document.getElementById('podcastFile').files[0];
-            const description = document.getElementById('podcastDescription').value;
-            
-            if (!name || !file) {
-                alert('Please provide both podcast name and file.');
-                return;
-            }
-            
-            // Create URL for the file
-            const url = URL.createObjectURL(file);
-            
-            // Create new podcast object
-            const newPodcast = {
-                id: Date.now(), // Use timestamp as unique ID
-                name: name,
-                description: description || "No description provided",
-                duration: "00:00", // Will be updated when played
-                url: url,
-                fileName: file.name,
-                uploadDate: new Date().toISOString()
-            };
-            
-            // Add to podcasts array
-            podcasts.push(newPodcast);
-            localStorage.setItem('pocafyPodcasts', JSON.stringify(podcasts));
-            
-            // Show success message
-            alert(`Podcast "${name}" uploaded successfully!`);
-            
-            // Reset form
-            this.reset();
-        });
-    </script>
-    <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        <div class="space-y-4">
+          <div>
+            <label for="adminPassword" class="block text-gray-300 mb-2">Password</label>
+            <input id="adminPassword" type="password" placeholder="Enter admin password"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary transition"/>
+          </div>
+          
+          <button onclick="checkAdminPassword()"
+                  class="w-full bg-primary hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+            Login
+          </button>
+        </div>
+      </div>
+    </div>
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
-    authDomain: "pocafy-1bfc5.firebaseapp.com",
-    projectId: "pocafy-1bfc5",
-    storageBucket: "pocafy-1bfc5.appspot.com",
-    messagingSenderId: "967728384050",
-    appId: "1:967728384050:web:dbab7568275ddba194942b"
-  };
+    <!-- Listener Login/Register -->
+    <div id="listenerLogin" class="hidden w-full max-w-md">
+      <div class="card rounded-2xl p-8 shadow-xl">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">Listener Access</h2>
+          <button onclick="backToRoleSelection()" class="text-gray-400 hover:text-white transition">
+            <i class="fas fa-arrow-left"></i>
+          </button>
+        </div>
+        
+        <div class="space-y-4">
+          <div>
+            <label for="email" class="block text-gray-300 mb-2">Email</label>
+            <input id="email" type="email" placeholder="your@email.com"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary transition"/>
+          </div>
+          
+          <div>
+            <label for="password" class="block text-gray-300 mb-2">Password</label>
+            <input id="password" type="password" placeholder="••••••••"
+                    class="w-full px-4 py-3 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary transition"/>
+          </div>
+          
+          <div class="flex space-x-4 pt-2">
+            <button onclick="register()"
+                     class="flex-1 bg-secondary hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+              Register
+            </button>
+            <button onclick="login()"
+                     class="flex-1 bg-primary hover:bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+    <!-- Admin Area: Podcast Upload -->
+    <div id="adminArea" class="hidden w-full max-w-4xl">
+      <div class="card rounded-2xl p-8 shadow-xl">
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h2 class="text-2xl font-semibold">Podcast Management</h2>
+            <p class="text-gray-400 text-sm">Upload and manage your podcast episodes</p>
+          </div>
+          <button onclick="logout()" class="text-gray-400 hover:text-white flex items-center space-x-2 transition">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+        
+        <div class="space-y-8">
+          <div class="file-upload bg-gray-700 p-6 rounded-xl transition">
+            <h3 class="text-xl font-medium mb-4">Upload New Podcast</h3>
+            <div class="flex flex-col space-y-4">
+              <div id="dropZone" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-600 rounded-lg p-8 cursor-pointer transition hover:border-primary">
+                <i class="fas fa-cloud-upload-alt text-4xl text-primary mb-3"></i>
+                <p class="text-center mb-2">Drag & drop your audio file here</p>
+                <p class="text-gray-400 text-sm mb-4">or</p>
+                <label for="fileInput" class="cursor-pointer bg-primary hover:bg-indigo-600 text-white font-bold py-2 px-6 rounded-lg transition inline-flex items-center">
+                  <i class="fas fa-file-audio mr-2"></i>
+                  Browse Files
+                </label>
+                <input type="file" id="fileInput" accept="audio/*" class="hidden"/>
+              </div>
+              
+              <div id="fileInfo" class="hidden bg-gray-800 rounded-lg p-4">
+                <div class="flex justify-between items-center">
+                  <div>
+                    <p id="fileName" class="font-medium"></p>
+                    <p id="fileSize" class="text-gray-400 text-sm"></p>
+                  </div>
+                  <button id="clearFile" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="mt-2">
+                  <label for="podcastTitle" class="block text-gray-300 mb-1">Episode Title</label>
+                  <input id="podcastTitle" type="text" placeholder="Enter episode title"
+                         class="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 focus:outline-none focus:ring-1 focus:ring-primary"/>
+                </div>
+              </div>
+              
+              <button onclick="uploadFile()"
+                      class="w-full bg-secondary hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg transition transform hover:scale-[1.02]">
+                <i class="fas fa-cloud-upload-alt mr-2"></i>
+                Upload Podcast
+              </button>
+              
+              <p id="uploadStatus" class="text-sm text-center"></p>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-xl font-medium mb-4">Your Podcasts</h3>
+            <div id="adminPodcastList" class="space-y-4"></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  // Beispiel: Überwache Auth-Status
-  onAuthStateChanged(auth, user => {
-    if(user) {
-      console.log("User ist eingeloggt:", user.email);
-      // Hier kannst du UI anpassen oder Daten laden
-    } else {
-      console.log("Kein eingeloggter User");
+    <!-- Listener Area: Podcasts -->
+    <div id="listenerArea" class="hidden w-full max-w-4xl">
+      <div class="card rounded-2xl p-8 shadow-xl">
+        <div class="flex justify-between items-center mb-8">
+          <div>
+            <h2 class="text-2xl font-semibold">Discover Podcasts</h2>
+            <p class="text-gray-400 text-sm">Listen to your favorite episodes</p>
+          </div>
+          <button onclick="logout()" class="text-gray-400 hover:text-white flex items-center space-x-2 transition">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+        
+        <div class="mb-6">
+          <div class="relative">
+            <input id="searchInput" type="text" placeholder="Search podcasts..."
+                    class="w-full px-4 py-3 pl-12 rounded-lg bg-gray-700 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary transition"
+                   oninput="filterPodcasts()"/>
+            <i class="fas fa-search absolute left-4 top-4 text-gray-400"></i>
+          </div>
+        </div>
+        
+        <div id="podcastList" class="space-y-6"></div>
+        
+        <div id="noResults" class="hidden text-center py-10">
+          <i class="fas fa-podcast text-5xl text-gray-600 mb-4"></i>
+          <h3 class="text-xl font-medium">No podcasts found</h3>
+          <p class="text-gray-400">Try a different search term</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase & Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    import { getStorage, ref, uploadBytes, listAll, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
+      authDomain: "pocafy-1bfc5.firebaseapp.com",
+      projectId: "pocafy-1bfc5",
+      storageBucket: "pocafy-1bfc5.appspot.com",
+      messagingSenderId: "967728384050",
+      appId: "1:967728384050:web:dbab7568275ddba194942b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const storage = getStorage(app);
+
+    // File input and drag & drop handling
+    const fileInput = document.getElementById('fileInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileNameDisplay = document.getElementById('fileName');
+    const fileSizeDisplay = document.getElementById('fileSize');
+    const clearFileBtn = document.getElementById('clearFile');
+    const podcastTitleInput = document.getElementById('podcastTitle');
+    
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-  });
-
-  // Beispiel-Funktionen zur Registrierung/Anmeldung, die du in deinem UI aufrufen kannst
-  async function register(email, password) {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Registrierung erfolgreich:", userCredential.user.email);
-    } catch(error) {
-      console.error("Registrierung fehlgeschlagen:", error.message);
+    
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      dropZone.classList.add('dragover');
     }
-  }
-
-  async function login(email, password) {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login erfolgreich:", userCredential.user.email);
-    } catch(error) {
-      console.error("Login fehlgeschlagen:", error.message);
+    
+    function unhighlight() {
+      dropZone.classList.remove('dragover');
     }
-  }
+    
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      if (files.length) {
+        fileInput.files = files;
+        handleFiles(files);
+      }
+    }
+    
+    // Handle selected files
+    fileInput.addEventListener('change', function(e) {
+      if (e.target.files.length) {
+        handleFiles(e.target.files);
+      }
+    });
+    
+    // Clear selected file
+    clearFileBtn.addEventListener('click', function() {
+      fileInput.value = '';
+      fileInfo.classList.add('hidden');
+      podcastTitleInput.value = '';
+    });
+    
+    // Display file info
+    function handleFiles(files) {
+      const file = files[0];
+      fileNameDisplay.textContent = file.name;
+      
+      // Format file size
+      const fileSize = file.size;
+      let sizeStr;
+      if (fileSize < 1024) {
+        sizeStr = fileSize + ' bytes';
+      } else if (fileSize < 1048576) {
+        sizeStr = (fileSize / 1024).toFixed(1) + ' KB';
+      } else {
+        sizeStr = (fileSize / 1048576).toFixed(1) + ' MB';
+      }
+      fileSizeDisplay.textContent = sizeStr;
+      
+      // Set default title (filename without extension)
+      const title = file.name.replace(/\.[^/.]+$/, "");
+      podcastTitleInput.value = title;
+      
+      fileInfo.classList.remove('hidden');
+    }
 
-  window.register = register; // Damit du register() aus deinem HTML aufrufen kannst
-  window.login = login;       // Ebenso für login()
-</script>
+    // Admin Password check
+    window.checkAdminPassword = function() {
+      const password = document.getElementById('adminPassword').value;
+      if (password === "123") {
+        hideAll();
+        document.getElementById('adminArea').classList.remove('hidden');
+        loadAdminPodcasts();
+      } else {
+        alert("Wrong password! Try '123'");
+      }
+    }
+
+    // Registration
+    window.register = async function () {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        alert("Please fill in all fields");
+        return;
+      }
+      
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        showListenerArea();
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    }
+
+    // Login
+    window.login = async function () {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      if (!email || !password) {
+        alert("Please fill in all fields");
+        return;
+      }
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        showListenerArea();
+      } catch (error) {
+        alert("Error: " + error.message);
+      }
+    }
+
+    // Logout
+    window.logout = async function () {
+      try {
+        await signOut(auth);
+        backToRoleSelection();
+        // Clear inputs
+        document.getElementById('email').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('adminPassword').value = '';
+      } catch (error) {
+        console.error("Logout error:", error);
+      }
+    }
+
+    // Show listener area + load podcasts
+    function showListenerArea() {
+      hideAll();
+      document.getElementById('listenerArea').classList.remove('hidden');
+      loadPodcasts();
+    }
+
+    // Podcast upload (Admin)
+    window.uploadFile = async function () {
+      if (!fileInput.files.length) {
+        document.getElementById('uploadStatus').textContent = "Please select a file first";
+        document.getElementById('uploadStatus').className = "text-sm text-center text-red-400";
+        return;
+      }
+      
+      const file = fileInput.files[0];
+      const title = podcastTitleInput.value || file.name.replace(/\.[^/.]+$/, "");
+      const storageRef = ref(storage, 'podcasts/' + file.name);
+
+      document.getElementById('uploadStatus').textContent = "Uploading...";
+      document.getElementById('uploadStatus').className = "text-sm text-center text-yellow-400";
+      
+      try {
+        await uploadBytes(storageRef, file);
+        document.getElementById('uploadStatus').textContent = "Upload successful!";
+        document.getElementById('uploadStatus').className = "text-sm text-center text-green-400";
+        
+        // Reset form
+        fileInput.value = '';
+        fileInfo.classList.add('hidden');
+        podcastTitleInput.value = '';
+        
+        // Reload podcast list
+        loadAdminPodcasts();
+      } catch (error) {
+        document.getElementById('uploadStatus').textContent = "Upload failed: " + error.message;
+        document.getElementById('uploadStatus').className = "text-sm text-center text-red-400";
+      }
+    }
+
+    // Load podcasts (Listener)
+    async function loadPodcasts() {
+      const listRef = ref(storage, 'podcasts');
+      const podcastList = document.getElementById('podcastList');
+      podcastList.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-primary"></i></div>';
+      
+      try {
+        const res = await listAll(listRef);
+        
+        if (res.items.length === 0) {
+          podcastList.innerHTML = `
+            <div class="text-center py-10">
+              <i class="fas fa-podcast text-5xl text-gray-600 mb-4"></i>
+              <h3 class="text-xl font-medium">No podcasts available</h3>
+              <p class="text-gray-400">The admin hasn't uploaded any podcasts yet</p>
+            </div>
+          `;
+          return;
+        }
+        
+        podcastList.innerHTML = '';
+        
+        for (const itemRef of res.items) {
+          const url = await getDownloadURL(itemRef);
+          const fileName = itemRef.name.replace(/\.[^/.]+$/, ""); // Remove file extension
+          
+          const div = document.createElement('div');
+          div.className = "podcast-card p-6 rounded-xl transition";
+          div.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="font-semibold text-xl mb-1">${fileName}</h3>
+                <div class="flex items-center space-x-3 text-sm text-gray-400">
+                  <span><i class="fas fa-headphones mr-1"></i> Podcast</span>
+                  <span><i class="fas fa-clock mr-1"></i> 45 min</span>
+                </div>
+              </div>
+              <span class="text-xs bg-gray-600 px-2 py-1 rounded-full">Audio</span>
+            </div>
+            <audio controls class="audio-player">
+              <source src="${url}" type="audio/mpeg">
+              Your browser does not support the audio element.
+            </audio>
+          `;
+          podcastList.appendChild(div);
+        }
+      } catch (error) {
+        podcastList.innerHTML = `
+          <div class="text-center py-10 text-red-400">
+            <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+            <p>Error loading podcasts. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Load podcasts (Admin)
+    async function loadAdminPodcasts() {
+      const listRef = ref(storage, 'podcasts');
+      const podcastList = document.getElementById('adminPodcastList');
+      podcastList.innerHTML = '<div class="text-center py-8"><i class="fas fa-spinner fa-spin text-2xl text-primary"></i></div>';
+      
+      try {
+        const res = await listAll(listRef);
+        
+        if (res.items.length === 0) {
+          podcastList.innerHTML = `
+            <div class="text-center py-10">
+              <i class="fas fa-podcast text-5xl text-gray-600 mb-4"></i>
+              <h3 class="text-xl font-medium">No podcasts uploaded yet</h3>
+              <p class="text-gray-400">Upload your first podcast using the form above</p>
+            </div>
+          `;
+          return;
+        }
+        
+        podcastList.innerHTML = '';
+        
+        for (const itemRef of res.items) {
+          const url = await getDownloadURL(itemRef);
+          const fileName = itemRef.name;
+          const displayName = fileName.replace(/\.[^/.]+$/, ""); // Remove file extension
+          
+          const div = document.createElement('div');
+          div.className = "podcast-card p-6 rounded-xl transition";
+          div.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <h3 class="font-semibold text-xl mb-1">${displayName}</h3>
+                <div class="flex items-center space-x-3 text-sm text-gray-400">
+                  <span><i class="fas fa-headphones mr-1"></i> Podcast</span>
+                  <span><i class="fas fa-clock mr-1"></i> 45 min</span>
+                </div>
+              </div>
+              <span class="text-xs bg-gray-600 px-2 py-1 rounded-full">Audio</span>
+            </div>
+            <div class="flex items-center space-x-4">
+              <audio controls class="flex-1 audio-player">
+                <source src="${url}" type="audio/mpeg">
+                Your browser does not support the audio element.
+              </audio>
+              <button onclick="deletePodcast('${fileName}')" class="text-red-400 hover:text-red-300 transition">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          podcastList.appendChild(div);
+        }
+      } catch (error) {
+        podcastList.innerHTML = `
+          <div class="text-center py-10 text-red-400">
+            <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+            <p>Error loading podcasts. Please try again later.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Delete podcast (Admin)
+    window.deletePodcast = async function(fileName) {
+      if (!confirm("Are you sure you want to delete this podcast?")) return;
+      
+      try {
+        const fileRef = ref(storage, 'podcasts/' + fileName);
+        await deleteObject(fileRef);
+        loadAdminPodcasts();
+      } catch (error) {
+        alert("Error deleting podcast: " + error.message);
+      }
+    }
+
+    // Filter podcasts by search term
+    window.filterPodcasts = function() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const podcastCards = document.querySelectorAll('.podcast-card');
+      let visibleCount = 0;
+      
+      podcastCards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        if (title.includes(searchTerm)) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      
+      document.getElementById('noResults').classList.toggle('hidden', visibleCount > 0);
+    }
+  </script>
 </body>
 </html>
