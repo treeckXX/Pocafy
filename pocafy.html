@@ -1,5 +1,24 @@
 <html lang="en">
 <head>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
+    authDomain: "pocafy-1bfc5.firebaseapp.com",
+    projectId: "pocafy-1bfc5",
+    storageBucket: "pocafy-1bfc5.firebasestorage.app",
+    messagingSenderId: "967728384050",
+    appId: "1:967728384050:web:dbab7568275ddba194942b"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pocafy</title>
@@ -105,6 +124,65 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+  // Firebase Konfiguration
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
+    authDomain: "pocafy-1bfc5.firebaseapp.com",
+    projectId: "pocafy-1bfc5",
+    storageBucket: "pocafy-1bfc5.appspot.com",
+    messagingSenderId: "967728384050",
+    appId: "1:967728384050:web:dbab7568275ddba194942b"
+  };
+
+  // Firebase App initialisieren
+  const app = initializeApp(firebaseConfig);
+
+  // Auth-Instanz holen
+  const auth = getAuth(app);
+
+  // Funktion für Registrierung (kannst du später aufrufen)
+  async function register(email, password) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Registrierung erfolgreich:", userCredential.user.email);
+      alert("Registrierung erfolgreich!");
+    } catch (error) {
+      console.error("Registrierungsfehler:", error);
+      alert("Fehler bei Registrierung: " + error.message);
+    }
+  }
+
+  // Funktion für Login (kannst du später aufrufen)
+  async function login(email, password) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login erfolgreich:", userCredential.user.email);
+      alert("Login erfolgreich!");
+    } catch (error) {
+      console.error("Login-Fehler:", error);
+      alert("Fehler beim Login: " + error.message);
+    }
+  }
+
+  // Globale Funktionen, damit du sie von HTML aus ansprechen kannst
+  window.register = register;
+  window.login = login;
+</script>
+      <form onsubmit="event.preventDefault(); register(document.getElementById('regEmail').value, document.getElementById('regPassword').value);">
+    <input type="email" id="regEmail" required placeholder="Email" />
+    <input type="password" id="regPassword" required placeholder="Passwort" />
+    <button type="submit">Registrieren</button>
+  </form>
+
+  <form onsubmit="event.preventDefault(); login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);">
+    <input type="email" id="loginEmail" required placeholder="Email" />
+    <input type="password" id="loginPassword" required placeholder="Passwort" />
+    <button type="submit">Login</button>
+  </form>
     <div class="container mx-auto max-w-md">
         <!-- Initial Choice Screen -->
         <div id="choiceScreen" class="bg-white rounded-xl shadow-2xl overflow-hidden fade-in">
@@ -811,5 +889,53 @@
             this.reset();
         });
     </script>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyC6G40ok1S6PbZSEM0vzKOOC5P-Am9Ul24",
+    authDomain: "pocafy-1bfc5.firebaseapp.com",
+    projectId: "pocafy-1bfc5",
+    storageBucket: "pocafy-1bfc5.appspot.com",
+    messagingSenderId: "967728384050",
+    appId: "1:967728384050:web:dbab7568275ddba194942b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Beispiel: Überwache Auth-Status
+  onAuthStateChanged(auth, user => {
+    if(user) {
+      console.log("User ist eingeloggt:", user.email);
+      // Hier kannst du UI anpassen oder Daten laden
+    } else {
+      console.log("Kein eingeloggter User");
+    }
+  });
+
+  // Beispiel-Funktionen zur Registrierung/Anmeldung, die du in deinem UI aufrufen kannst
+  async function register(email, password) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("Registrierung erfolgreich:", userCredential.user.email);
+    } catch(error) {
+      console.error("Registrierung fehlgeschlagen:", error.message);
+    }
+  }
+
+  async function login(email, password) {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login erfolgreich:", userCredential.user.email);
+    } catch(error) {
+      console.error("Login fehlgeschlagen:", error.message);
+    }
+  }
+
+  window.register = register; // Damit du register() aus deinem HTML aufrufen kannst
+  window.login = login;       // Ebenso für login()
+</script>
 </body>
 </html>
